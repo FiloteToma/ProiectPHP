@@ -28,7 +28,7 @@ Funcționalități
    Configurare conexiune PDO:
    Editați fișierul pdo.php și actualizați detaliile bazei de date (host, nume, utilizator și parolă).
    Rularea aplicației:
-   Deschideți aplicația în browser accesând http://localhost/numele-proiectului.
+   Deschideți aplicația în browser accesând http://filote-toma-andei.infy.uk/index.php?i=1 .
    Structură Fișiere
    config/: Conține fișierul pentru conexiunea PDO.
    controllers/: Conține logica aplicației, precum gestionarea camerelor, rezervărilor și recenziilor.
