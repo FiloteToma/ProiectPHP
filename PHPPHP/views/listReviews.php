@@ -1,8 +1,15 @@
+<?php if (!isset($_SESSION['user_id'])): ?>
+    <p>Trebuie să fii autentificat pentru a accesa această pagină.</p>
+    <a href="login.php">Autentificare</a>
+    <?php exit; ?>
+<?php endif; ?>
+
 <!DOCTYPE html>
 <html lang="ro">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recenzii Cameră</title>
     <style>
         table {
@@ -34,31 +41,37 @@
 
 <body>
     <h1>Recenzii pentru cameră</h1>
-    <a href="index.php?action=createReview&room_id=<?php echo $room_id; ?>">Adaugă Recenzie</a>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Autor</th>
-                <th>Conținut</th>
-                <th>Rating</th>
-                <th>Acțiuni</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($reviews as $review): ?>
+    <a href="index.php?action=createReview&room_id=<?php echo htmlspecialchars($room_id, ENT_QUOTES, 'UTF-8'); ?>">Adaugă Recenzie</a>
+
+    <?php if (!empty($reviews)): ?>
+        <table>
+            <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($review['id']); ?></td>
-                    <td><?php echo htmlspecialchars($review['author']); ?></td>
-                    <td><?php echo htmlspecialchars($review['content']); ?></td>
-                    <td><?php echo htmlspecialchars($review['rating']); ?></td>
-                    <td>
-                        <a href="index.php?action=deleteReview&id=<?php echo $review['id']; ?>" onclick="return confirm('Ești sigur că vrei să ștergi această recenzie?');">Șterge</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Autor</th>
+                    <th>Conținut</th>
+                    <th>Rating</th>
+                    <th>Acțiuni</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($reviews as $review): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($review['author'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($review['content'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($review['rating'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td>
+                            <a href="index.php?action=deleteReview&id=<?php echo htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8'); ?>"
+                                onclick="return confirm('Ești sigur că vrei să ștergi această recenzie?');">Șterge</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>Nu există recenzii pentru această cameră.</p>
+    <?php endif; ?>
 </body>
 
 </html>

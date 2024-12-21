@@ -10,22 +10,44 @@
 
 <body>
     <h1>Lista Camerelor</h1>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Nume</th>
-            <th>Descriere</th>
-            <th>Preț</th>
-            <th>Status</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>Camera Standard</td>
-            <td>Cameră simplă pentru o persoană.</td>
-            <td>100.00</td>
-            <td>Available</td>
-        </tr>
-    </table>
+
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        <p>Trebuie să fii autentificat pentru a accesa această pagină.</p>
+        <a href="login.php">Autentificare</a>
+        <?php exit; ?>
+    <?php endif; ?>
+
+    <?php if (!empty($rooms)): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nume</th>
+                    <th>Descriere</th>
+                    <th>Preț</th>
+                    <th>Status</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($rooms as $room): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($room['id'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($room['name'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($room['description'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($room['price'], ENT_QUOTES, 'UTF-8'); ?> RON</td>
+                        <td><?php echo htmlspecialchars($room['status'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td>
+                            <a href="index.php?action=updateRoom&id=<?php echo $room['id']; ?>">Editează</a> |
+                            <a href="index.php?action=deleteRoom&id=<?php echo $room['id']; ?>" onclick="return confirm('Ești sigur că vrei să ștergi această cameră?');">Șterge</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>Nu există camere disponibile în acest moment.</p>
+    <?php endif; ?>
 </body>
 
 </html>

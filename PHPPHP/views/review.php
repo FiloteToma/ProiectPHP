@@ -1,23 +1,61 @@
-<!DOCTYPE html>
-<html>
+<?php
+class Review
+{
+    private $conn;
 
-<head>
-    <title>Recenzii</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
 
-<body>
-    <h1>Recenzii</h1>
-    <div class="reviews">
-        <?php foreach ($reviews as $review): ?>
-            <div class="review">
-                <h3><?php echo htmlspecialchars($review['room_name']); ?></h3>
-                <p>Utilizator: <?php echo htmlspecialchars($review['username']); ?></p>
-                <p>Rating: <?php echo htmlspecialchars($review['rating']); ?> / 5</p>
-                <p>Comentariu: <?php echo htmlspecialchars($review['comment']); ?></p>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</body>
+    public function getAllReviewsByRoom($roomId)
+    {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM reviews WHERE room_id = :room_id");
+            $stmt->bindValue(':room_id', (int) $roomId, PDO::PARAM_INT);
+            $stmt->execute();
 
-</html>
+            $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return array_map(function ($review) {
+                return array_map(function ($value) {
+                    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                }, $review);
+            }, $reviews);
+        } catch (PDOException $e) {
+            error_log("Eroare la preluarea recenziilor: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function createReview($roomId, $author, $content, $rating)
+    {
+        try {
+            $stmt = $this->conn->prepare(
+                "INSERT INTO reviews (room_id, author, content, rating) VALUES (:room_id, :author, :content, :rating)"
+            );
+
+            $stmt->bindValue(':room_id', (int) $roomId, PDO::PARAM_INT);
+            $stmt->bindValue(':author', htmlspecialchars($author, ENT_QUOTES, 'UTF-8'), PDO::PARAM_STR);
+            $stmt->bindValue(':content', htmlspecialchars($content, ENT_QUOTES, 'UTF-8'), PDO::PARAM_STR);
+            $stmt->bindValue(':rating', (int) $rating, PDO::PARAM_INT);
+
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Eroare la crearea recenziei: " . $e->getMessage());
+            throw new Exception("Eroare la crearea recenziei.");
+        }
+    }
+
+    public function deleteReview($id)
+    {
+        try {
+            $stmt = $this->conn->prepare("DELETE FROM reviews WHERE id = :id");
+            $stmt->bindValue(':id', (int) $id, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Eroare la ștergerea recenziei: " . $e->getMessage());
+            throw new Exception("Eroare la ștergerea recenziei.");
+        }
+    }
+}
